@@ -19,3 +19,4 @@ $ (venv) python index.py
 - https://github.com/cosmologicon/pygame-text
 
 ## Preview
+[![미리보기](https://github.com/koojongin/dragon-flight/blob/main/preview.mp4)]([https://youtu.be/vt5fpE0bzSY](https://github.com/koojongin/dragon-flight/blob/main/preview.mp4)
