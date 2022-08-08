@@ -1,3 +1,4 @@
+import math
 import os
 import sys
 
@@ -27,7 +28,7 @@ class FirstScene(GameScene):
 
         app.audio['bgm_acuarium'].set_volume(0.5)
         app.audio['bgm_acuarium'].play(-1)
-
+        i = 0
         while self.is_playing:
 
             delta_time = app.clock.tick(app.fps)
@@ -55,7 +56,11 @@ class FirstScene(GameScene):
             bg_character = image['character_illust_01_lv1']
             bg_character = pygame.transform.scale(bg_character, (
                 screen.get_width() - 20, app.get_height_by_width(screen.get_width() - 20, bg_character)))
-            screen.blit(bg_character, [10, 100])
+
+            bg_character_base_y_position = 100
+            bg_character_y = bg_character_base_y_position + math.sin(i)*5
+            screen.blit(bg_character, [10, bg_character_y])
+            i += 0.05
 
             #
             logo = image['logo']
