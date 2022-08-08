@@ -17,4 +17,3 @@ $ (venv) python index.py
 
 
 ## Preview
-![](https://github.com/koojongin/avoid-the-poop/blob/main/example.gif)
