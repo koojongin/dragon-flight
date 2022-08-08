@@ -15,5 +15,7 @@ $ venv\Scripts\activate
 $ (venv) python index.py
 ```
 
+## External Modules
+- https://github.com/cosmologicon/pygame-text
 
 ## Preview
