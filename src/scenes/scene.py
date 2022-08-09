@@ -1,2 +1,5 @@
 class GameScene:
-    def play(self): pass
+    is_playing = False
+
+    def play(self):
+        pass
