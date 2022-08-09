@@ -9,7 +9,7 @@ from src.interfaces.i_application import IApplication
 from src.scenes.scene import GameScene
 
 
-class SecondScene(GameScene):
+class StageScene(GameScene):
     bg_y_position = 0
 
     def __init__(self, application: IApplication):
@@ -21,14 +21,6 @@ class SecondScene(GameScene):
         screen = self.application.screen
         image = self.application.image
         audio = self.application.audio
-
-        projectile_motion_index = 0
-        selectable_characters = [
-            image[f"character_illust_{str(value).zfill(2)}_lv1"]
-            for value in range(1, 16)
-        ]
-        selected = selectable_characters[0]
-        selected_character_index = 0
 
         audio["bgm_fortress_sky"].set_volume(0.5)
         audio["bgm_fortress_sky"].play(-1)
@@ -42,25 +34,7 @@ class SecondScene(GameScene):
                     pygame.quit()
                     sys.exit()
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        app.audio["bgm_fortress_sky"].stop()
-                        app.audio["effect_select"].play()
-                        app.next_scene()
-
-                    if event.key == pygame.K_LEFT:
-                        if selected_character_index > 0:
-                            selected_character_index -= 1
-
-                        selected = selectable_characters[selected_character_index]
-
-                    if event.key == pygame.K_RIGHT:
-                        if selected_character_index < 14:
-                            selected_character_index += 1
-
-                        selected = selectable_characters[selected_character_index]
-
-            bg = image["bg-stage2"]
+            bg = image["bg-stage3"]
             screen.blit(bg, [0, (0 - bg.get_height()) + self.bg_y_position])
             screen.blit(bg, [0, 0 + self.bg_y_position])
             screen.blit(bg, [0, (0 + bg.get_height()) + self.bg_y_position])
@@ -84,24 +58,36 @@ class SecondScene(GameScene):
             # display - mid
             top_text_display_y = text_position[1] + text_title[0].get_height()
             mid_horizontal_padding = 30
+            character_select_area_padding = 20
+            character_select_area_width = (
+                screen.get_width()
+                - character_select_area_padding * 2
+                - (mid_horizontal_padding * 2)
+            ) / 3
+
             mid_line_first_y = top_text_display_y + 30
+            selectable_characters = [
+                image[f"character_select_{str(value).zfill(2)}_lv1"]
+                for value in range(1, 16)
+            ]
 
-            selected = pygame.transform.scale(
-                selected,
-                (
-                    screen.get_width() + 30,
-                    app.get_height_by_width(screen.get_width() + 30, selected),
-                ),
-            )
-            screen.blit(
-                selected,
-                (
-                    screen.get_width() / 2 - selected.get_width() / 2,
-                    screen.get_height() / 2 - selected.get_height() / 2 + math.sin(projectile_motion_index) * 5,
-                ),
-            )
+            for index, selectable_character in enumerate(selectable_characters):
+                floor = math.floor(index / 3)
 
-            projectile_motion_index += 0.05
-
-            ######
+                selectable_character = pygame.transform.scale(
+                    selectable_character,
+                    (character_select_area_width, character_select_area_width),
+                )
+                screen.blit(
+                    selectable_character,
+                    [
+                        mid_horizontal_padding
+                        + selectable_character.get_width() * (index % 3)
+                        + character_select_area_padding * (index % 3),
+                        mid_line_first_y
+                        + floor * selectable_character.get_height()
+                        + floor * character_select_area_padding,
+                    ],
+                )
+            #
             pygame.display.update()

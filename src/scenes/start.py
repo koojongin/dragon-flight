@@ -29,6 +29,10 @@ class FirstScene(GameScene):
 
         app.audio["bgm_acuarium"].set_volume(0.5)
         app.audio["bgm_acuarium"].play(-1)
+
+        bg = image["illust/first_login.png"]
+        bg = pygame.transform.scale(bg, (screen.get_width() + 40, app.get_height_by_width(screen.get_width() + 40, bg)))
+
         i = 0
         while self.is_playing:
 
@@ -46,27 +50,28 @@ class FirstScene(GameScene):
                         app.next_scene()
 
             #
-            bg = image["bg-stage1"]
-            screen.blit(bg, [0, (0 - bg.get_height()) + self.bg_y_position])
-            screen.blit(bg, [0, 0 + self.bg_y_position])
-            screen.blit(bg, [0, (0 + bg.get_height()) + self.bg_y_position])
-            if self.bg_y_position >= bg.get_height():
-                self.bg_y_position = 0
-            self.bg_y_position += 1
+            screen.blit(bg,
+                        [screen.get_width() / 2 - bg.get_width() / 2,
+                         screen.get_height() / 2 - bg.get_height() / 2 + 25])
 
             #
-            bg_character = image["character_illust_01_lv1"]
-            bg_character = pygame.transform.scale(
-                bg_character,
-                (
-                    screen.get_width() - 20,
-                    app.get_height_by_width(screen.get_width() - 20, bg_character),
-                ),
-            )
+            grac = app.image["ui/grac.png"]
+            screen.blit(grac,
+                        (screen.get_width() - grac.get_width() - 10, screen.get_height() - grac.get_height() - 10))
 
-            bg_character_base_y_position = 100
-            bg_character_y = bg_character_base_y_position + math.sin(i) * 5
-            screen.blit(bg_character, [10, bg_character_y])
+            #
+            # bg_character = image["character_illust_01_lv1"]
+            # bg_character = pygame.transform.scale(
+            #     bg_character,
+            #     (
+            #         screen.get_width() - 20,
+            #         app.get_height_by_width(screen.get_width() - 20, bg_character),
+            #     ),
+            # )
+            #
+            # bg_character_base_y_position = 100
+            # bg_character_y = bg_character_base_y_position + math.sin(i) * 5
+            # screen.blit(bg_character, [10, bg_character_y])
             i += 0.05
 
             #
@@ -82,12 +87,13 @@ class FirstScene(GameScene):
             #
             # text_title = font.render("아무키나 누르세요", True, (255, 255, 255))
             text_title = ptext.draw(
-                "\"스페이스 바\"를 눌러 시작",
+                '"스페이스 바"를 눌러 시작',
                 (-99, -99),
                 owidth=1.1,
                 ocolor=(255, 255, 255),
                 color=(0, 0, 0),
                 fontname=MAPLE_STORY_BOLD_FONT,
+                alpha=(math.sin(i) + 1.2)
             )
             text_position = (
                 screen.get_width() / 2 - text_title[0].get_width() / 2,

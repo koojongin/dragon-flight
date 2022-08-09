@@ -5,6 +5,7 @@ import pygame
 
 from src.interfaces.i_application import IApplication
 from src.scenes.second import SecondScene
+from src.scenes.stage import StageScene
 from src.scenes.start import FirstScene
 
 PROJECT_PATH = os.path.abspath(os.curdir)
@@ -23,18 +24,41 @@ class Application(IApplication):
     def __init__(self, title, screen_size):
         # pygame.mixer.pre_init(44100, 16, 2, 4096)
         pygame.init()
-        # pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
-
+        self.image["favicon"] = pygame.image.load(f"{IMAGE_PATH}/icon.png")
+        scaled_favicon = pygame.transform.scale(self.image["favicon"], (32, 32))
+        pygame.display.set_icon(scaled_favicon)
         pygame.display.set_caption(title)
         self.screen = pygame.display.set_mode(screen_size)
         self.load_images()
         self.load_audios()
         self.load_scenes()
         self.set_scene(0)
+        self.after_resources_load()
 
     def run(self):
         self.clock = pygame.time.Clock()
         self.current_scene.play()
+
+    def after_resources_load(self):
+        print("on_load")
+        for character_number in range(1, 16):
+            for character_level in range(1, 4):
+                lv_string = ""
+                if character_level != 1:
+                    lv_string = f"_lv{character_level}"
+                self.image[
+                    f"sd_{str(character_number).zfill(2)}{lv_string}"
+                ] = pygame.image.load(
+                    IMAGE_PATH
+                    + f"/character/sd/sd_{str(character_number).zfill(2)}{lv_string}.png"
+                )
+
+        self.image["bg-stage2"] = pygame.image.load(IMAGE_PATH + "/background/02.png")
+        self.image["bg-stage3"] = pygame.image.load(IMAGE_PATH + "/background/03.png")
+        self.image["bg-stage4"] = pygame.image.load(IMAGE_PATH + "/background/04.png")
+        self.image["bg-stage5"] = pygame.image.load(IMAGE_PATH + "/background/05.png")
+        self.image["bg-stage6"] = pygame.image.load(IMAGE_PATH + "/background/25.png")
+        print("on_load_complete")
 
     def next_scene(self):
         self.current_scene.is_playing = False
@@ -42,12 +66,15 @@ class Application(IApplication):
         self.current_scene.play()
 
     def load_scenes(self):
+        # Scene 순서대로
         self.scenes.append(FirstScene(self))
         self.scenes.append(SecondScene(self))
+        self.scenes.append(StageScene(self))
 
     def load_images(self):
+        self.image["ui/grac.png"] = pygame.image.load(IMAGE_PATH + "/ui/grac.png")
+        self.image["illust/first_login.png"] = pygame.image.load(IMAGE_PATH + "/illust/first_login.png")
         self.image["bg-stage1"] = pygame.image.load(IMAGE_PATH + "/background/01.png")
-        self.image["bg-stage2"] = pygame.image.load(IMAGE_PATH + "/background/02.png")
         for character_number in range(1, 16):
             self.image[
                 f"sunny_{str(character_number).zfill(2)}_lv1"
