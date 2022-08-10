@@ -1,4 +1,6 @@
 class IApplication:
+    current_scene = None
+
     def run(self):
         pass
 

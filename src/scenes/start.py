@@ -31,7 +31,13 @@ class FirstScene(GameScene):
         app.audio["bgm_acuarium"].play(-1)
 
         bg = image["illust/first_login.png"]
-        bg = pygame.transform.scale(bg, (screen.get_width() + 40, app.get_height_by_width(screen.get_width() + 40, bg)))
+        bg = pygame.transform.scale(
+            bg,
+            (
+                screen.get_width() + 40,
+                app.get_height_by_width(screen.get_width() + 40, bg),
+            ),
+        )
 
         i = 0
         while self.is_playing:
@@ -50,14 +56,23 @@ class FirstScene(GameScene):
                         app.next_scene()
 
             #
-            screen.blit(bg,
-                        [screen.get_width() / 2 - bg.get_width() / 2,
-                         screen.get_height() / 2 - bg.get_height() / 2 + 25])
+            screen.blit(
+                bg,
+                [
+                    screen.get_width() / 2 - bg.get_width() / 2,
+                    screen.get_height() / 2 - bg.get_height() / 2 + 25,
+                ],
+            )
 
             #
             grac = app.image["ui/grac.png"]
-            screen.blit(grac,
-                        (screen.get_width() - grac.get_width() - 10, screen.get_height() - grac.get_height() - 10))
+            screen.blit(
+                grac,
+                (
+                    screen.get_width() - grac.get_width() - 10,
+                    screen.get_height() - grac.get_height() - 10,
+                ),
+            )
 
             #
             # bg_character = image["character_illust_01_lv1"]
@@ -93,7 +108,7 @@ class FirstScene(GameScene):
                 ocolor=(255, 255, 255),
                 color=(0, 0, 0),
                 fontname=MAPLE_STORY_BOLD_FONT,
-                alpha=(math.sin(i) + 1.2)
+                alpha=(math.sin(i) + 1.2),
             )
             text_position = (
                 screen.get_width() / 2 - text_title[0].get_width() / 2,

@@ -3,12 +3,12 @@ import sys
 
 import pygame
 
+from src.constant import PROJECT_PATH
 from src.interfaces.i_application import IApplication
 from src.scenes.second import SecondScene
 from src.scenes.stage import StageScene
 from src.scenes.start import FirstScene
 
-PROJECT_PATH = os.path.abspath(os.curdir)
 IMAGE_PATH = f"{PROJECT_PATH}/resources/images"
 AUDIO_PATH = f"{PROJECT_PATH}/resources/audios"
 
@@ -58,6 +58,18 @@ class Application(IApplication):
         self.image["bg-stage4"] = pygame.image.load(IMAGE_PATH + "/background/04.png")
         self.image["bg-stage5"] = pygame.image.load(IMAGE_PATH + "/background/05.png")
         self.image["bg-stage6"] = pygame.image.load(IMAGE_PATH + "/background/25.png")
+
+        for (dirpath, dirnames, filenames) in os.walk(f"{IMAGE_PATH}/monsters"):
+            for filename in filenames:
+                self.image[f"monsters/{filename}"] = pygame.image.load(
+                    f"{dirpath}/{filename}"
+                )
+
+        for (dirpath, dirnames, filenames) in os.walk(f"{IMAGE_PATH}/character/sunny"):
+            for filename in filenames:
+                self.image[f"character/sunny/{filename}"] = pygame.image.load(
+                    f"{dirpath}/{filename}"
+                )
         print("on_load_complete")
 
     def next_scene(self):
@@ -73,15 +85,11 @@ class Application(IApplication):
 
     def load_images(self):
         self.image["ui/grac.png"] = pygame.image.load(IMAGE_PATH + "/ui/grac.png")
-        self.image["illust/first_login.png"] = pygame.image.load(IMAGE_PATH + "/illust/first_login.png")
+        self.image["illust/first_login.png"] = pygame.image.load(
+            IMAGE_PATH + "/illust/first_login.png"
+        )
         self.image["bg-stage1"] = pygame.image.load(IMAGE_PATH + "/background/01.png")
         for character_number in range(1, 16):
-            self.image[
-                f"sunny_{str(character_number).zfill(2)}_lv1"
-            ] = pygame.image.load(
-                IMAGE_PATH
-                + f"/character/sunny/sunny_{str(character_number).zfill(2)}.png"
-            )
             for character_level in range(1, 4):
                 lv_string = ""
                 if character_level != 1:

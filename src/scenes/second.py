@@ -11,12 +11,15 @@ from src.scenes.scene import GameScene
 
 class SecondScene(GameScene):
     bg_y_position = 0
+    is_playing = False
 
     def __init__(self, application: IApplication):
         self.application = application
         return
 
     def play(self):
+        self.is_playing = True
+
         app = self.application
         screen = self.application.screen
         image = self.application.image
@@ -33,7 +36,7 @@ class SecondScene(GameScene):
         audio["bgm_fortress_sky"].set_volume(0.5)
         audio["bgm_fortress_sky"].play(-1)
 
-        while True:
+        while self.is_playing:
 
             delta_time = app.clock.tick(app.fps)
 
@@ -46,6 +49,7 @@ class SecondScene(GameScene):
                     if event.key == pygame.K_SPACE:
                         app.audio["bgm_fortress_sky"].stop()
                         app.audio["effect_select"].play()
+                        self.is_playing = False
                         app.next_scene()
 
                     if event.key == pygame.K_LEFT:
@@ -97,7 +101,9 @@ class SecondScene(GameScene):
                 selected,
                 (
                     screen.get_width() / 2 - selected.get_width() / 2,
-                    screen.get_height() / 2 - selected.get_height() / 2 + math.sin(projectile_motion_index) * 5,
+                    screen.get_height() / 2
+                    - selected.get_height() / 2
+                    + math.sin(projectile_motion_index) * 5,
                 ),
             )
 
