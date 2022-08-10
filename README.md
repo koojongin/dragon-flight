@@ -19,5 +19,5 @@ $ (venv) python index.py
 - https://github.com/cosmologicon/pygame-text
 
 ## Preview
-https://user-images.githubusercontent.com/12585089/183763422-fcd54a1d-e13d-4a1b-8845-ea089a4e5762.mp4
+https://user-images.githubusercontent.com/12585089/183978473-70ce7bbf-0685-431d-b12a-b625f2395bd1.mp4
 
