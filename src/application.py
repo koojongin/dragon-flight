@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 
@@ -23,6 +24,7 @@ class Application(IApplication):
 
     def __init__(self, title, screen_size):
         # pygame.mixer.pre_init(44100, 16, 2, 4096)
+        self.clock = pygame.time.Clock()
         pygame.init()
         self.image["favicon"] = pygame.image.load(f"{IMAGE_PATH}/icon.png")
         scaled_favicon = pygame.transform.scale(self.image["favicon"], (32, 32))
@@ -33,10 +35,9 @@ class Application(IApplication):
         self.load_audios()
         self.load_scenes()
         self.set_scene(0)
-        self.after_resources_load()
 
     def run(self):
-        self.clock = pygame.time.Clock()
+        self.after_resources_load()
         self.current_scene.play()
 
     def after_resources_load(self):
@@ -68,6 +69,12 @@ class Application(IApplication):
         for (dirpath, dirnames, filenames) in os.walk(f"{IMAGE_PATH}/character/sunny"):
             for filename in filenames:
                 self.image[f"character/sunny/{filename}"] = pygame.image.load(
+                    f"{dirpath}/{filename}"
+                )
+
+        for (dirpath, dirnames, filenames) in os.walk(f"{IMAGE_PATH}/character/weapon"):
+            for filename in filenames:
+                self.image[f"character/weapon/{filename}"] = pygame.image.load(
                     f"{dirpath}/{filename}"
                 )
         print("on_load_complete")

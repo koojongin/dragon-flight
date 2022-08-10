@@ -38,9 +38,10 @@ class StageScene(GameScene):
         pygame.time.set_timer(monster_create_event, 941)
         all_sprites = pygame.sprite.Group()
         player = Player(
-            self.image["monsters/candy.png"], (0, self.screen.get_height() - 50)
+            self.image["monsters/candy.png"],
+            app=self.app,
+            position=(0, self.screen.get_height() - 50),
         )
-        player.set_application(self.app)
         all_sprites.add(player)
 
         while True:
@@ -112,6 +113,18 @@ class StageScene(GameScene):
                     bullet.update(self, delta_time)
                     if bullet.is_destroy is True:
                         monster.bullets.remove(bullet)
+
+            # display player
+            if player.missile_cooldown_count <= 0:
+                player.fire()
+                player.missile_cooldown_count = player.missile_cooldown
+            player.missile_cooldown_count -= delta_time
+
+            for missile in player.missiles:
+                self.screen.blit(missile.image, (missile.x, missile.y))
+                missile.update(self, delta_time)
+                if missile.is_destroy is True:
+                    player.missiles.remove(missile)
 
             #
             self.elapsed_frame += 1

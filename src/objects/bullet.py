@@ -2,14 +2,14 @@ from src.objects.util import calculate_distance_dot
 
 
 class Bullet:
-    def __init__(self, image, position=(0, 0)):
+    def __init__(self, image, position=(0, 0), speed=0.2):
         self.image = image
         self.x = position[0]
         self.y = position[1]
 
         self.x = 0
         self.y = 0
-        self.speed = 0.2
+        self.speed = speed
         self.destination = (0, 0)
         self.departure = (0, 0)
         self.is_destroy = False

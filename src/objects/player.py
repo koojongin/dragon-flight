@@ -1,6 +1,7 @@
 import pygame
 
 from src.interfaces.i_application import IApplication
+from src.objects.bullet import Bullet
 
 
 class Player(pygame.sprite.Sprite):
@@ -22,19 +23,30 @@ class Player(pygame.sprite.Sprite):
         "down": False,
     }
 
-    def __init__(self, image, position=(0, 0)):
+    def __init__(self, image, app, position=(0, 0), ):
         super(Player, self).__init__()
+        self.app = app
         self.image = image
         self.sprites.append(image)
         self.x = position[0]
         self.y = position[1]
         self.rect = pygame.Rect((self.x, self.y), (self.image.get_size()))
 
-    def set_application(self, app):
-        self.app = app
+        ###
+        self.missiles = []
+        self.missile_speed = 0.5
+        self.missile_cooldown = 500
+        self.missile_cooldown_count = self.missile_cooldown
 
-    def update(self):
+    def fire(self):
+        bullet = Bullet(self.app.current_scene.image["character/weapon/bullet_01_01.png"], speed=self.missile_speed)
+        bullet.x = self.x + self.image.get_width() / 2 - bullet.image.get_width() / 2
+        bullet.y = self.y + self.image.get_height() / 2 - bullet.image.get_height() / 2
+        bullet.departure = (self.x, self.y)
+        bullet.destination = (self.x, -100)
+        self.missiles.append(bullet)
 
+    def update(self, *args):
         self.index += 1
         self.rect = pygame.Rect((self.x, self.y), (self.rect.width, self.rect.height))
         if self.index >= len(self.sprites):

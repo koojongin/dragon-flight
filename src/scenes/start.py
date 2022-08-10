@@ -43,7 +43,6 @@ class FirstScene(GameScene):
         while self.is_playing:
 
             delta_time = app.clock.tick(app.fps)
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
