@@ -3,7 +3,7 @@ import sys
 
 import pygame
 
-from src.constant import PROJECT_PATH
+from src.constant import PROJECT_PATH, FPS
 from src.interfaces.i_application import IApplication
 from src.scenes.second import SecondScene
 from src.scenes.stage import StageScene
@@ -18,7 +18,7 @@ class Application(IApplication):
     audio = {}
     scenes = []
     current_scene = None
-    fps = 60
+    fps = FPS
     current_scene_index = None
 
     def __init__(self, title, screen_size):

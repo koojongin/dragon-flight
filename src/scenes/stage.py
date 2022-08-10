@@ -1,12 +1,10 @@
-import math
 import sys
 
 import pygame
 
-from libs import ptext
-from src.constant import MAPLE_STORY_BOLD_FONT
 from src.interfaces.i_application import IApplication
-from src.objects.monster import Monster, Player
+from src.objects.monster import Monster
+from src.objects.player import Player
 from src.scenes.scene import GameScene
 
 
@@ -48,14 +46,29 @@ class StageScene(GameScene):
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        monster.fire((
+                            player.x + player.rect.width / 2,
+                            player.y + player.rect.height / 2,
+                        ))
+
                     if event.key == pygame.K_LEFT:
-                        player.move_left()
+                        player.on_event_keydown(event.key)
                     if event.key == pygame.K_RIGHT:
-                        player.move_right()
+                        player.on_event_keydown(event.key)
+                    if event.key == pygame.K_UP:
+                        player.on_event_keydown(event.key)
+                    if event.key == pygame.K_DOWN:
+                        player.on_event_keydown(event.key)
 
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                        player.state = "neutral"
+                    if (
+                            event.key == pygame.K_LEFT
+                            or event.key == pygame.K_RIGHT
+                            or event.key == pygame.K_UP
+                            or event.key == pygame.K_DOWN
+                    ):
+                        player.on_event_keyup(event.key)
 
             # display background
             bg: pygame.Surface = self.image["bg-stage3"]
@@ -70,25 +83,29 @@ class StageScene(GameScene):
 
             # display monsters
             for monster in monsters:
-                if bg_y == 1:
-                    monster.fire((player.x + player.rect.width / 2, player.y + player.rect.height / 2))
                 if monster.is_destroy is True:
                     monsters.remove(monster)
                     continue
                 self.screen.blit(monster.image, (monster.x, monster.y))
-                if monster.bullet_cooldown_count == 0:
-                    monster.fire((player.x + player.rect.width / 2, player.y + player.rect.height / 2))
+                if monster.bullet_cooldown_count <= 0:
+                    monster.fire(
+                        (
+                            player.x + player.rect.width / 2,
+                            player.y + player.rect.height / 2,
+                        )
+                    )
                     monster.bullet_cooldown_count = monster.bullet_cooldown
                 monster.y += monster.speed * delta_time
-                print(monster.speed * delta_time)
-                monster.bullet_cooldown_count -= 1
+                if monster.y > 500:
+                    monster.y = 0
+                monster.bullet_cooldown_count -= delta_time
 
                 for bullet in monster.bullets:
                     self.screen.blit(bullet.image, (bullet.x, bullet.y))
                     bullet.update(self, delta_time)
                     if bullet.is_destroy is True:
                         monster.bullets.remove(bullet)
-                        monster.fire((player.x, player.y))
+                        # monster.fire((player.x, player.y))
 
             #
             self.elapsed_frame += 1
