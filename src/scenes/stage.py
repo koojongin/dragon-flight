@@ -1,4 +1,5 @@
 import sys
+from random import randrange
 
 import pygame
 
@@ -29,8 +30,12 @@ class StageScene(GameScene):
             Monster(
                 image=self.image["monsters/candy.png"],
                 arrow_image=self.image["monsters/candy_arrow.png"],
+                position=(100, 0)
             )
         ]
+
+        monster_create_event = pygame.USEREVENT + 1
+        pygame.time.set_timer(monster_create_event, 941)
         all_sprites = pygame.sprite.Group()
         player = Player(
             self.image["monsters/candy.png"], (0, self.screen.get_height() - 50)
@@ -46,12 +51,6 @@ class StageScene(GameScene):
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        monster.fire((
-                            player.x + player.rect.width / 2,
-                            player.y + player.rect.height / 2,
-                        ))
-
                     if event.key == pygame.K_LEFT:
                         player.on_event_keydown(event.key)
                     if event.key == pygame.K_RIGHT:
@@ -60,7 +59,6 @@ class StageScene(GameScene):
                         player.on_event_keydown(event.key)
                     if event.key == pygame.K_DOWN:
                         player.on_event_keydown(event.key)
-
                 if event.type == pygame.KEYUP:
                     if (
                             event.key == pygame.K_LEFT
@@ -69,6 +67,13 @@ class StageScene(GameScene):
                             or event.key == pygame.K_DOWN
                     ):
                         player.on_event_keyup(event.key)
+
+                if event.type == monster_create_event:
+                    monsters.append(Monster(
+                        image=self.image["monsters/candy.png"],
+                        arrow_image=self.image["monsters/candy_arrow.png"],
+                        position=(randrange(0, self.screen.get_width()), 0)
+                    ))
 
             # display background
             bg: pygame.Surface = self.image["bg-stage3"]
@@ -82,7 +87,7 @@ class StageScene(GameScene):
             bg_y += 1
 
             # display monsters
-            for monster in monsters:
+            for monster_index, monster in enumerate(monsters):
                 if monster.is_destroy is True:
                     monsters.remove(monster)
                     continue
@@ -96,8 +101,10 @@ class StageScene(GameScene):
                     )
                     monster.bullet_cooldown_count = monster.bullet_cooldown
                 monster.y += monster.speed * delta_time
-                if monster.y > 500:
-                    monster.y = 0
+                if monster.y > self.screen.get_height():
+                    monsters.remove(monster)
+                    continue
+
                 monster.bullet_cooldown_count -= delta_time
 
                 for bullet in monster.bullets:
@@ -105,7 +112,6 @@ class StageScene(GameScene):
                     bullet.update(self, delta_time)
                     if bullet.is_destroy is True:
                         monster.bullets.remove(bullet)
-                        # monster.fire((player.x, player.y))
 
             #
             self.elapsed_frame += 1
