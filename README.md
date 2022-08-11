@@ -24,10 +24,10 @@ $ pyinstaller -w -F --icon="resources/images/icon.png" index.py
 ```
 
 ## Preview
-version 08/12  
+version 08/12
 https://user-images.githubusercontent.com/12585089/184223333-b05d7020-5ea2-42ac-ae2a-23b32eff667b.mp4
 
 
-version 08/11  
+version 08/11
 https://user-images.githubusercontent.com/12585089/183978473-70ce7bbf-0685-431d-b12a-b625f2395bd1.mp4
 
