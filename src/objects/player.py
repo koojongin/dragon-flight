@@ -33,9 +33,11 @@ class Player(pygame.sprite.Sprite):
         self.rect = pygame.Rect((self.x, self.y), (self.image.get_size()))
 
         ###
+        self.max_hp = 3
+        self.current_hp = self.max_hp
         self.missiles = []
         self.missile_speed = 0.5
-        self.missile_cooldown = 500
+        self.missile_cooldown = 200
         self.missile_cooldown_count = self.missile_cooldown
 
     def fire(self):
@@ -102,3 +104,10 @@ class Player(pygame.sprite.Sprite):
             self.keys["up"] = False
         if key == pygame.K_DOWN:
             self.keys["down"] = False
+
+    def on_collision(self, target):
+        print("?", self.current_hp, target)
+        self.current_hp -= 1
+
+        if self.current_hp <= 0:
+            self.destroy()

@@ -77,7 +77,17 @@ class Application(IApplication):
                 self.image[f"character/weapon/{filename}"] = pygame.image.load(
                     f"{dirpath}/{filename}"
                 )
+
+        for (dirpath, dirnames, filenames) in os.walk(f"{IMAGE_PATH}/ui"):
+            for filename in filenames:
+                self.image[f"ui/{filename}"] = pygame.image.load(
+                    f"{dirpath}/{filename}"
+                )
         print("on_load_complete")
+
+    def select_scene(self, index):
+        self.set_scene(index)
+        self.current_scene.play()
 
     def next_scene(self):
         self.current_scene.is_playing = False

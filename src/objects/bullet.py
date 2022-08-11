@@ -1,3 +1,5 @@
+import pygame
+
 from src.objects.util import calculate_distance_dot
 
 
@@ -46,3 +48,12 @@ class Bullet:
             if distance_y < distance_x:
                 self.x += sdt * direction_x
                 self.y += sdt * direction_y * (distance_y / distance_x)
+
+    def check_collision(self, targets):
+        bullet_rect = pygame.Rect(self.x, self.y, self.image.get_width(), self.image.get_height())
+        for target in targets:
+            target_rect = pygame.Rect(target.x, target.y, target.image.get_width(), target.image.get_height())
+            is_collision = pygame.Rect.colliderect(bullet_rect, target_rect)
+            if is_collision:
+                target.on_collision(self)
+                self.destroy()

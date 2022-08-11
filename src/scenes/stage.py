@@ -7,9 +7,11 @@ from src.interfaces.i_application import IApplication
 from src.objects.monster import Monster
 from src.objects.player import Player
 from src.scenes.scene import GameScene
+from src.scenes.start import FONT_PATH
 
 
 class StageScene(GameScene):
+    is_playing = False
     bg_y_position = 0
     elapsed_frame = 0
 
@@ -21,8 +23,11 @@ class StageScene(GameScene):
         self.audio = self.application.audio
 
     def play(self):
+        self.is_playing = True
         self.audio["bgm_fortress_sky"].set_volume(0.5)
         self.audio["bgm_fortress_sky"].play(-1)
+
+        font = pygame.font.Font(FONT_PATH, 12)
 
         # values
         bg_y = 0
@@ -44,7 +49,7 @@ class StageScene(GameScene):
         )
         all_sprites.add(player)
 
-        while True:
+        while self.is_playing:
             delta_time = self.app.clock.tick(self.app.fps)
             player.delta_time = delta_time
             for event in pygame.event.get():
@@ -111,6 +116,7 @@ class StageScene(GameScene):
                 for bullet in monster.bullets:
                     self.screen.blit(bullet.image, (bullet.x, bullet.y))
                     bullet.update(self, delta_time)
+                    bullet.check_collision([player])
                     if bullet.is_destroy is True:
                         monster.bullets.remove(bullet)
 
@@ -125,6 +131,24 @@ class StageScene(GameScene):
                 missile.update(self, delta_time)
                 if missile.is_destroy is True:
                     player.missiles.remove(missile)
+                    continue
+                missile.check_collision(monsters)
+
+            # player 사망처리
+            if player.is_destroy:
+                self.is_playing = False
+                self.audio["bgm_fortress_sky"].stop()
+                self.app.select_scene(1)
+
+            # 최상단 Layer , UI같은거
+            hp_img = self.app.image['ui/hp.png']
+            hp_img = pygame.transform.scale(hp_img, (25, 25))
+            hp_img_position = (0, self.screen.get_height() - hp_img.get_height())
+            self.screen.blit(hp_img, hp_img_position)
+            hp_text = font.render(f"x{player.current_hp}", True, (255, 255, 255))
+            self.screen.blit(hp_text,
+                             (hp_img_position[0] + hp_img.get_width() - hp_text.get_width(),
+                              hp_img_position[1] + hp_img.get_height() - hp_text.get_height()))
 
             #
             self.elapsed_frame += 1

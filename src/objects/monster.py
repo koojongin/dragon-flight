@@ -14,8 +14,8 @@ class Monster:
         self.y = position[1]
 
         self.speed = 0.1
-        self.max_hp = 10
-        self.current_hp = 10
+        self.max_hp = 5
+        self.current_hp = 5
         self.bullet_cooldown = 1000
         self.bullet_cooldown_count = self.bullet_cooldown
 
@@ -32,5 +32,11 @@ class Monster:
         self.bullets.append(bullet)
 
     def destroy(self):
-        bullets = []
+        self.bullets = []
         self.is_destroy = True
+
+    def on_collision(self, target):
+        self.current_hp -= 1
+
+        if self.current_hp <= 0:
+            self.destroy()
