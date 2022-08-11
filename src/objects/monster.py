@@ -36,7 +36,10 @@ class Monster:
         self.is_destroy = True
 
     def on_collision(self, target):
-        self.current_hp -= 1
+        target_class_name = type(target).__name__
+
+        if target_class_name == "Bullet":
+            self.current_hp -= target.damage
 
         if self.current_hp <= 0:
             self.destroy()

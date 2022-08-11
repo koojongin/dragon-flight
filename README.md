@@ -18,6 +18,11 @@ $ (venv) python index.py
 ## External Modules
 - https://github.com/cosmologicon/pygame-text
 
+## Build Exe File
+```
+$ pyinstaller -w -F --icon="resources/images/icon.png" index.py
+```
+
 ## Preview
 https://user-images.githubusercontent.com/12585089/183978473-70ce7bbf-0685-431d-b12a-b625f2395bd1.mp4
 

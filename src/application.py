@@ -6,7 +6,7 @@ import pygame
 
 from src.constant import PROJECT_PATH, FPS
 from src.interfaces.i_application import IApplication
-from src.scenes.second import SecondScene
+from src.scenes.character_selection import SecondScene
 from src.scenes.stage import StageScene
 from src.scenes.start import FirstScene
 
@@ -21,6 +21,7 @@ class Application(IApplication):
     current_scene = None
     fps = FPS
     current_scene_index = None
+    data = {}
 
     def __init__(self, title, screen_size):
         # pygame.mixer.pre_init(44100, 16, 2, 4096)

@@ -5,29 +5,15 @@ from src.objects.bullet import Bullet
 
 
 class Player(pygame.sprite.Sprite):
-    x = 0
-    y = 0
-    speed = 0.3
-    destination = (0, 0)
-    is_destroy = False
-    state = "neutral"  # left,right,neutral
-    index = 0
-    sprites = []
-    delta_time = 0
-    app: IApplication = None
-
-    keys = {
-        "right": False,
-        "left": False,
-        "up": False,
-        "down": False,
-    }
-
-    def __init__(self, image, app, position=(0, 0), ):
+    def __init__(
+        self,
+        image,
+        app,
+        position=(0, 0),
+    ):
         super(Player, self).__init__()
-        self.app = app
+        self.app: IApplication = app
         self.image = image
-        self.sprites.append(image)
         self.x = position[0]
         self.y = position[1]
         self.rect = pygame.Rect((self.x, self.y), (self.image.get_size()))
@@ -38,10 +24,53 @@ class Player(pygame.sprite.Sprite):
         self.missiles = []
         self.missile_speed = 0.5
         self.missile_cooldown = 200
-        self.missile_cooldown_count = self.missile_cooldown
+        self.missile_cooldown_count = 0
 
-    def fire(self):
-        bullet = Bullet(self.app.current_scene.image["character/weapon/bullet_01_01.png"], speed=self.missile_speed)
+        self.speed = 0.3
+        self.destination = (0, 0)
+        self.is_destroy = False
+        self.state = "neutral"  # left,right,neutral
+        self.index = 0
+        self.alphas = []
+        self.sprites = []
+        self.keys = {
+            "right": False,
+            "left": False,
+            "up": False,
+            "down": False,
+        }
+
+        self.setup_sprites(app.data["selected_character_index"])
+
+    def setup_sprites(self, character_number=0):
+        # self.sprites.append(self.image)
+        character_number = str(character_number + 1).zfill(2)
+        app = self.app
+        sunny: pygame.Surface = app.image[
+            f"character/sunny/sunny_{character_number}.png"
+        ]
+        sunny = sunny.subsurface((0, 5, 50, 115))
+        scale_value = 0.5
+        sunny = pygame.transform.scale(
+            sunny, (sunny.get_width() * scale_value, sunny.get_height() * scale_value)
+        )
+        self.image = sunny
+        self.sprites.append(sunny)
+
+        self.rect = pygame.Rect(
+            (self.x, self.y), (self.image.get_width(), self.image.get_height())
+        )
+
+    def fire(self, character_number=0):
+        character_number = self.app.data["selected_character_index"]
+        character_number = str(character_number + 1).zfill(2)
+        bullet = Bullet(
+            self.app.current_scene.image[
+                f"character/weapon/bullet_{character_number}_01.png"
+            ],
+            speed=self.missile_speed,
+            damage=int(character_number) + 1,
+        )
         bullet.x = self.x + self.image.get_width() / 2 - bullet.image.get_width() / 2
         bullet.y = self.y + self.image.get_height() / 2 - bullet.image.get_height() / 2
         bullet.departure = (self.x, self.y)
@@ -49,13 +78,31 @@ class Player(pygame.sprite.Sprite):
         self.missiles.append(bullet)
 
     def update(self, *args):
+        self.rect = pygame.Rect(
+            (self.x, self.y), (self.image.get_width(), self.image.get_height())
+        )
         self.index += 1
-        self.rect = pygame.Rect((self.x, self.y), (self.rect.width, self.rect.height))
+        self.update_sprites()
+        self.update_movement()
+        self.update_missile_cooldown()
+
+    def update_missile_cooldown(self):
+        if self.missile_cooldown_count <= 0:
+            self.fire()
+            self.missile_cooldown_count = self.missile_cooldown
+        self.missile_cooldown_count -= self.delta_time
+
+    def update_sprites(self):
         if self.index >= len(self.sprites):
             self.index = 0
 
         self.image = self.sprites[self.index]
 
+        if self.alphas.__len__() > 0:
+            self.image.set_alpha(self.alphas[0])
+            self.alphas.pop(0)
+
+    def update_movement(self):
         move_delta = self.speed * self.delta_time
 
         if self.keys["left"] is True:
@@ -106,8 +153,8 @@ class Player(pygame.sprite.Sprite):
             self.keys["down"] = False
 
     def on_collision(self, target):
-        print("?", self.current_hp, target)
         self.current_hp -= 1
 
+        self.alphas = [10, 10, 255, 10, 10, 255, 10, 10, 255, 10, 10, 255]
         if self.current_hp <= 0:
             self.destroy()

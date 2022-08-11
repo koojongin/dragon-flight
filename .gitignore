@@ -3,3 +3,6 @@
 venv
 dist
 build
+index.spec
+__pycache__/
+*.pyc

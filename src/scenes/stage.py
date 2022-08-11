@@ -22,6 +22,8 @@ class StageScene(GameScene):
         self.image = self.application.image
         self.audio = self.application.audio
 
+        self.monsters = []
+
     def play(self):
         self.is_playing = True
         self.audio["bgm_fortress_sky"].set_volume(0.5)
@@ -31,13 +33,6 @@ class StageScene(GameScene):
 
         # values
         bg_y = 0
-        monsters = [
-            Monster(
-                image=self.image["monsters/candy.png"],
-                arrow_image=self.image["monsters/candy_arrow.png"],
-                position=(100, 0)
-            )
-        ]
 
         monster_create_event = pygame.USEREVENT + 1
         pygame.time.set_timer(monster_create_event, 941)
@@ -67,19 +62,15 @@ class StageScene(GameScene):
                         player.on_event_keydown(event.key)
                 if event.type == pygame.KEYUP:
                     if (
-                            event.key == pygame.K_LEFT
-                            or event.key == pygame.K_RIGHT
-                            or event.key == pygame.K_UP
-                            or event.key == pygame.K_DOWN
+                        event.key == pygame.K_LEFT
+                        or event.key == pygame.K_RIGHT
+                        or event.key == pygame.K_UP
+                        or event.key == pygame.K_DOWN
                     ):
                         player.on_event_keyup(event.key)
 
                 if event.type == monster_create_event:
-                    monsters.append(Monster(
-                        image=self.image["monsters/candy.png"],
-                        arrow_image=self.image["monsters/candy_arrow.png"],
-                        position=(randrange(0, self.screen.get_width()), 0)
-                    ))
+                    self.spawn_monster()
 
             # display background
             bg: pygame.Surface = self.image["bg-stage3"]
@@ -93,9 +84,9 @@ class StageScene(GameScene):
             bg_y += 1
 
             # display monsters
-            for monster_index, monster in enumerate(monsters):
+            for monster_index, monster in enumerate(self.monsters):
                 if monster.is_destroy is True:
-                    monsters.remove(monster)
+                    self.monsters.remove(monster)
                     continue
                 self.screen.blit(monster.image, (monster.x, monster.y))
                 if monster.bullet_cooldown_count <= 0:
@@ -108,7 +99,7 @@ class StageScene(GameScene):
                     monster.bullet_cooldown_count = monster.bullet_cooldown
                 monster.y += monster.speed * delta_time
                 if monster.y > self.screen.get_height():
-                    monsters.remove(monster)
+                    self.monsters.remove(monster)
                     continue
 
                 monster.bullet_cooldown_count -= delta_time
@@ -121,10 +112,6 @@ class StageScene(GameScene):
                         monster.bullets.remove(bullet)
 
             # display player
-            if player.missile_cooldown_count <= 0:
-                player.fire()
-                player.missile_cooldown_count = player.missile_cooldown
-            player.missile_cooldown_count -= delta_time
 
             for missile in player.missiles:
                 self.screen.blit(missile.image, (missile.x, missile.y))
@@ -132,23 +119,28 @@ class StageScene(GameScene):
                 if missile.is_destroy is True:
                     player.missiles.remove(missile)
                     continue
-                missile.check_collision(monsters)
+                missile.check_collision(self.monsters)
 
             # player 사망처리
             if player.is_destroy:
                 self.is_playing = False
                 self.audio["bgm_fortress_sky"].stop()
                 self.app.select_scene(1)
+                self.app.current_scene.__init__()
 
             # 최상단 Layer , UI같은거
-            hp_img = self.app.image['ui/hp.png']
+            hp_img = self.app.image["ui/hp.png"]
             hp_img = pygame.transform.scale(hp_img, (25, 25))
             hp_img_position = (0, self.screen.get_height() - hp_img.get_height())
             self.screen.blit(hp_img, hp_img_position)
             hp_text = font.render(f"x{player.current_hp}", True, (255, 255, 255))
-            self.screen.blit(hp_text,
-                             (hp_img_position[0] + hp_img.get_width() - hp_text.get_width(),
-                              hp_img_position[1] + hp_img.get_height() - hp_text.get_height()))
+            self.screen.blit(
+                hp_text,
+                (
+                    hp_img_position[0] + hp_img.get_width() - hp_text.get_width(),
+                    hp_img_position[1] + hp_img.get_height() - hp_text.get_height(),
+                ),
+            )
 
             #
             self.elapsed_frame += 1
@@ -156,3 +148,16 @@ class StageScene(GameScene):
             all_sprites.update()
             all_sprites.draw(self.screen)
             pygame.display.update()
+
+    def spawn_monster(self):
+        monster_img = self.image["monsters/candy.png"]
+        self.monsters.append(
+            Monster(
+                image=monster_img,
+                arrow_image=self.image["monsters/candy_arrow.png"],
+                position=(
+                    randrange(0, self.screen.get_width() - monster_img.get_width()),
+                    0,
+                ),
+            )
+        )

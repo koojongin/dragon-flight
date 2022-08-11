@@ -4,7 +4,8 @@ from src.objects.util import calculate_distance_dot
 
 
 class Bullet:
-    def __init__(self, image, position=(0, 0), speed=0.2):
+    def __init__(self, image, position=(0, 0), speed=0.2, damage=1):
+        self.damage = damage
         self.image = image
         self.x = position[0]
         self.y = position[1]
@@ -16,14 +17,17 @@ class Bullet:
         self.departure = (0, 0)
         self.is_destroy = False
 
+    def set_damage(self, damage):
+        self.damage = damage
+
     def destroy(self):
         self.is_destroy = True
 
     def update(self, scene, delta_time):
         is_close = False
         if (
-                calculate_distance_dot(self.x, self.destination[0] + 800) <= 5
-                and calculate_distance_dot(self.y, self.destination[1] + 800) <= 5
+            calculate_distance_dot(self.x, self.destination[0] + 800) <= 5
+            and calculate_distance_dot(self.y, self.destination[1] + 800) <= 5
         ):
             is_close = True
             self.destroy()
@@ -50,9 +54,14 @@ class Bullet:
                 self.y += sdt * direction_y * (distance_y / distance_x)
 
     def check_collision(self, targets):
-        bullet_rect = pygame.Rect(self.x, self.y, self.image.get_width(), self.image.get_height())
+        bullet_rect = pygame.Rect(
+            self.x, self.y, self.image.get_width(), self.image.get_height()
+        )
         for target in targets:
-            target_rect = pygame.Rect(target.x, target.y, target.image.get_width(), target.image.get_height())
+            target_class_name = type(target).__name__
+            target_rect = pygame.Rect(
+                target.x, target.y, target.image.get_width(), target.image.get_height()
+            )
             is_collision = pygame.Rect.colliderect(bullet_rect, target_rect)
             if is_collision:
                 target.on_collision(self)
