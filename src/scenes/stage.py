@@ -9,6 +9,7 @@ from libs import ptext
 from src.constant import MAPLE_STORY_BOLD_FONT
 from src.interfaces.i_application import IApplication
 from src.objects.monster import Monster
+from src.objects.monsters.candy import MonsterCandy
 from src.objects.player import Player
 from src.objects.util import get_font
 from src.scenes.scene import GameScene
@@ -100,24 +101,24 @@ class StageScene(GameScene):
                 if monster.is_destroy is True:
                     self.monsters.remove(monster)
                     continue
-                self.screen.blit(monster.image, (monster.x, monster.y))
+                self.screen.blit(monster.image, (monster.position[0], monster.position[1]))
                 if monster.bullet_cooldown_count <= 0:
                     monster.fire(
                         (
-                            player.x + player.rect.width / 2,
-                            player.y + player.rect.height / 2,
+                            player.position[0] + player.rect.width / 2,
+                            player.position[1] + player.rect.height / 2,
                         )
                     )
                     monster.bullet_cooldown_count = monster.bullet_cooldown
-                monster.y += monster.speed * delta_time
-                if monster.y > self.screen.get_height():
+                monster.position = (monster.position[0], monster.position[1] + monster.speed * delta_time)
+                if monster.position[1] > self.screen.get_height():
                     self.monsters.remove(monster)
                     continue
 
                 monster.bullet_cooldown_count -= delta_time
 
                 for bullet in monster.bullets:
-                    self.screen.blit(bullet.image, (bullet.x, bullet.y))
+                    self.screen.blit(bullet.image, (bullet.position[0], bullet.position[1]))
                     bullet.update(self, delta_time)
                     bullet.check_collision([player])
                     if bullet.is_destroy is True:
@@ -127,7 +128,7 @@ class StageScene(GameScene):
 
             for missile in player.missiles:
                 # missile.image.fill((255, 0, 0))
-                self.screen.blit(missile.image, (missile.x, missile.y))
+                self.screen.blit(missile.image, (missile.position[0], missile.position[1]))
                 missile.update(self, delta_time)
                 if missile.is_destroy is True:
                     player.missiles.remove(missile)
@@ -191,13 +192,13 @@ class StageScene(GameScene):
                 rect = copy(sprite.image)
                 rect.fill((100, 0, 0))
                 # self.screen.blit(rect, (sprite.x, sprite.y))
-                self.screen.blit(sprite.image, (sprite.x, sprite.y))
+                self.screen.blit(sprite.image, (sprite.position[0], sprite.position[1]))
             pygame.display.update()
 
     def spawn_monster(self):
         monster_img = self.image["monsters/candy.png"]
         self.monsters.append(
-            Monster(
+            MonsterCandy(
                 image=monster_img,
                 arrow_image=self.image["monsters/candy_arrow.png"],
                 position=(

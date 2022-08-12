@@ -14,9 +14,8 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         self.app: IApplication = app
         self.image = image
-        self.x = position[0]
-        self.y = position[1]
-        self.rect = pygame.Rect((self.x, self.y), (self.image.get_size()))
+        self.position = position
+        self.rect = pygame.Rect(self.position, (self.image.get_size()))
 
         ###
         self.max_hp = 3
@@ -58,7 +57,7 @@ class Player(pygame.sprite.Sprite):
         self.sprites.append(sunny)
 
         self.rect = pygame.Rect(
-            (self.x, self.y), (self.image.get_width(), self.image.get_height())
+            (self.position[0], self.position[1]), (self.image.get_width(), self.image.get_height())
         )
 
     def fire(self):
@@ -74,15 +73,16 @@ class Player(pygame.sprite.Sprite):
         if bullet.image.get_width() > 30:
             bullet.set_image_width(30)
 
-        bullet.x = self.x + (self.image.get_width() / 2) - bullet.image.get_width() / 2
-        bullet.y = self.y + self.image.get_height() / 2 - bullet.image.get_height() / 2
-        bullet.departure = (self.x, self.y)
-        bullet.destination = (self.x, -100)
+        bullet_x = self.position[0] + (self.image.get_width() / 2) - bullet.image.get_width() / 2
+        bullet_y = self.position[1] + self.image.get_height() / 2 - bullet.image.get_height() / 2
+        bullet.position = (bullet_x, bullet_y)
+        bullet.departure = (self.position[0], self.position[1])
+        bullet.destination = (self.position[0], -100)
         self.missiles.append(bullet)
 
     def update(self, *args):
         self.rect = pygame.Rect(
-            (self.x, self.y), (self.image.get_width(), self.image.get_height())
+            (self.position[0], self.position[1]), (self.image.get_width(), self.image.get_height())
         )
         self.index += 1
         self.update_sprites()
@@ -91,7 +91,7 @@ class Player(pygame.sprite.Sprite):
         self.deadline_auto_suicide()
 
     def deadline_auto_suicide(self):
-        if self.y <= -100:
+        if self.position[1] <= -100:
             self.destroy()
 
     def update_missile_cooldown(self):
@@ -114,31 +114,32 @@ class Player(pygame.sprite.Sprite):
         move_delta = self.speed * self.delta_time
 
         if self.keys["left"] is True:
-            result = self.x - move_delta
+            result = self.position[0] - move_delta
             if result <= 0:
-                result = self.x
-            self.x = result
+                result = self.position[0]
+            self.position = (result, self.position[1])
 
         if self.keys["right"] is True:
-            result = self.x + move_delta
+            result = self.position[0] + move_delta
             if result >= self.app.current_scene.screen.get_width() - self.rect.width:
-                result = self.x
-            self.x = result
+                result = self.position[0]
+            self.position = (result, self.position[1])
 
         if self.keys["up"] is True:
-            result = self.y - move_delta
+            result = self.position[1] - move_delta
             if result <= 0:
-                result = self.y
-            self.y = result
+                result = self.position[1]
+            self.position = (self.position[0], result)
 
         if self.keys["down"] is True:
-            result = self.y + move_delta
+            result = self.position[1] + move_delta
             if result >= self.app.current_scene.screen.get_height() - self.rect.height:
-                result = self.y
-            self.y = result
+                result = self.position[1]
+            self.position = (self.position[0], result)
 
     def destroy(self):
         self.is_destroy = True
+        print("DIE")
 
     def on_event_keydown(self, key):
         if key == pygame.K_LEFT:
@@ -161,8 +162,17 @@ class Player(pygame.sprite.Sprite):
             self.keys["down"] = False
 
     def on_collision(self, target):
-        self.current_hp -= 1
+        target_class_name = type(target).__name__
+        is_collision = pygame.Rect.colliderect(self.get_rect(), target.get_rect())
+        if target_class_name == "Bullet" and is_collision:
+            self.current_hp -= 1
+            self.alphas = [10, 10, 255, 10, 10, 255, 10, 10, 255, 10, 10, 255]
+            if self.current_hp <= 0:
+                self.destroy()
 
-        self.alphas = [10, 10, 255, 10, 10, 255, 10, 10, 255, 10, 10, 255]
-        if self.current_hp <= 0:
+        if target_class_name.find("Monster") >= 0 and is_collision:
+            self.current_hp = 0
             self.destroy()
+
+    def get_rect(self):
+        return pygame.Rect(self.position, (self.image.get_width(), self.image.get_height()))

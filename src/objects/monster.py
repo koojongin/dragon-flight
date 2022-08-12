@@ -1,6 +1,8 @@
 import datetime
 import math
 
+import pygame
+
 from src.interfaces.i_application import IApplication
 from src.objects.bullet import Bullet
 from src.objects.coin import Coin
@@ -13,8 +15,7 @@ class Monster:
         if arrow_image is not None:
             self.arrow_image = arrow_image
 
-        self.x = position[0]
-        self.y = position[1]
+        self.position = position
 
         self.speed = 0.1
         self.max_hp = 5
@@ -26,11 +27,21 @@ class Monster:
 
         self.is_destroy = False
 
+    def set_speed(self, speed):
+        self.speed = speed
+
+    def set_max_hp(self, hp):
+        self.max_hp = hp
+
+    def set_current_hp(self, hp):
+        self.current_hp = hp
+
     def fire(self, target_position):
         bullet = Bullet(self.arrow_image)
-        bullet.x = self.x + self.image.get_width() / 2 - bullet.image.get_width() / 2
-        bullet.y = self.y + self.image.get_height() / 2 - bullet.image.get_height() / 2
-        bullet.departure = (bullet.x, bullet.y)
+        bullet_x = self.position[0] + self.image.get_width() / 2 - bullet.image.get_width() / 2
+        bullet_y = self.position[1] + self.image.get_height() / 2 - bullet.image.get_height() / 2
+        bullet.position = (bullet_x, bullet_y)
+        bullet.departure = bullet.position
         bullet.destination = target_position
         self.bullets.append(bullet)
 
@@ -43,7 +54,8 @@ class Monster:
             if score is not None:
                 self.app.current_scene.data['score'] += 1
             coin = Coin(self.app, check_colliders=self.check_colliders)
-            coin.set_position((self.x + self.image.get_width() / 2, self.y + self.image.get_height() / 2))
+            coin.set_position(
+                (self.position[0] + self.image.get_width() / 2, self.position[1] + self.image.get_height() / 2))
             self.app.game_objects.append(coin)
 
         self.is_destroy = True
@@ -56,3 +68,6 @@ class Monster:
 
         if self.current_hp <= 0:
             self.destroy(by_player_attack=True)
+
+    def get_rect(self):
+        return pygame.Rect(self.position, (self.image.get_width(), self.image.get_height()))

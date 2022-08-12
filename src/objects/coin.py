@@ -38,8 +38,8 @@ class Coin:
         for target in targets:
             target_class_name = type(target).__name__
             if target_class_name == 'Player':
-                coin_rect = pygame.Rect(self.position[0], self.position[1], self.image.get_width(),
-                                        self.image.get_height())
+                coin_rect = pygame.Rect(self.position, (self.image.get_width(),
+                                                        self.image.get_height()))
                 is_collision = pygame.Rect.colliderect(coin_rect, target.rect)
                 if is_collision:
                     self.app.audio['effect/gold_earn.mp3'].play()
