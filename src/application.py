@@ -84,6 +84,18 @@ class Application(IApplication):
                 self.image[f"ui/{filename}"] = pygame.image.load(
                     f"{dirpath}/{filename}"
                 )
+
+        for (dirpath, dirnames, filenames) in os.walk(f"{AUDIO_PATH}"):
+            for filename in filenames:
+                self.audio[f"{filename}"] = pygame.mixer.Sound(
+                    f"{dirpath}/{filename}"
+                )
+
+        for (dirpath, dirnames, filenames) in os.walk(f"{AUDIO_PATH}/effect"):
+            for filename in filenames:
+                self.audio[f"effect/{filename}"] = pygame.mixer.Sound(
+                    f"{dirpath}/{filename}"
+                )
         print("on_load_complete")
 
     def select_scene(self, index):

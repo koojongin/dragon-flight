@@ -26,8 +26,8 @@ class StageScene(GameScene):
 
     def play(self):
         self.is_playing = True
-        self.audio["bgm_fortress_sky"].set_volume(0.5)
-        self.audio["bgm_fortress_sky"].play(-1)
+        self.audio["bgm_till_the_end_of_infinity.mp3"].set_volume(0.5)
+        self.audio["bgm_till_the_end_of_infinity.mp3"].play(-1)
 
         font = pygame.font.Font(FONT_PATH, 12)
 
@@ -62,10 +62,10 @@ class StageScene(GameScene):
                         player.on_event_keydown(event.key)
                 if event.type == pygame.KEYUP:
                     if (
-                        event.key == pygame.K_LEFT
-                        or event.key == pygame.K_RIGHT
-                        or event.key == pygame.K_UP
-                        or event.key == pygame.K_DOWN
+                            event.key == pygame.K_LEFT
+                            or event.key == pygame.K_RIGHT
+                            or event.key == pygame.K_UP
+                            or event.key == pygame.K_DOWN
                     ):
                         player.on_event_keyup(event.key)
 
@@ -124,7 +124,7 @@ class StageScene(GameScene):
             # player 사망처리
             if player.is_destroy:
                 self.is_playing = False
-                self.audio["bgm_fortress_sky"].stop()
+                self.audio["bgm_till_the_end_of_infinity.mp3"].stop()
                 self.app.select_scene(1)
                 self.app.current_scene.__init__()
 
@@ -159,5 +159,6 @@ class StageScene(GameScene):
                     randrange(0, self.screen.get_width() - monster_img.get_width()),
                     0,
                 ),
+                app=self.application
             )
         )

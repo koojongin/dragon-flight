@@ -5,8 +5,9 @@ from src.objects.bullet import Bullet
 
 
 class Monster:
-    def __init__(self, image, position=(0, 0), arrow_image=None):
+    def __init__(self, image, position=(0, 0), arrow_image=None, app=None):
         self.image = image
+        self.app = app
         if arrow_image is not None:
             self.arrow_image = arrow_image
 
@@ -32,6 +33,7 @@ class Monster:
         self.bullets.append(bullet)
 
     def destroy(self):
+        self.app.audio['effect/monster_death.wav'].play()
         self.bullets = []
         self.is_destroy = True
 

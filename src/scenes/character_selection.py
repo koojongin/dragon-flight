@@ -70,12 +70,14 @@ class SecondScene(GameScene):
                     if event.key == pygame.K_LEFT:
                         if self.selected_character_index > 0:
                             self.selected_character_index -= 1
+                            self.application.audio['effect/select_02.wav'].play()
 
                         self.update_selected_sunny()
 
                     if event.key == pygame.K_RIGHT:
                         if self.selected_character_index < 14:
                             self.selected_character_index += 1
+                            self.application.audio['effect/select_02.wav'].play()
 
                         self.update_selected_sunny()
 
