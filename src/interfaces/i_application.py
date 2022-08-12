@@ -1,5 +1,6 @@
 class IApplication:
     current_scene = None
+    game_objects = []
 
     def run(self):
         pass

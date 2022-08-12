@@ -1,6 +1,6 @@
 import pygame
 
-from src.objects.util import calculate_distance_dot
+from src.objects.util import calculate_distance_dot, get_height_by_width
 
 
 class Bullet:
@@ -10,8 +10,6 @@ class Bullet:
         self.x = position[0]
         self.y = position[1]
 
-        self.x = 0
-        self.y = 0
         self.speed = speed
         self.destination = (0, 0)
         self.departure = (0, 0)
@@ -20,14 +18,19 @@ class Bullet:
     def set_damage(self, damage):
         self.damage = damage
 
+    def set_image_width(self, width):
+        self.image = pygame.transform.scale(
+            self.image, (width, get_height_by_width(width, self.image))
+        )
+
     def destroy(self):
         self.is_destroy = True
 
     def update(self, scene, delta_time):
         is_close = False
         if (
-            calculate_distance_dot(self.x, self.destination[0] + 800) <= 5
-            and calculate_distance_dot(self.y, self.destination[1] + 800) <= 5
+                calculate_distance_dot(self.x, self.destination[0] + 800) <= 5
+                and calculate_distance_dot(self.y, self.destination[1] + 800) <= 5
         ):
             is_close = True
             self.destroy()

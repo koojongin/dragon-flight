@@ -1,11 +1,16 @@
 import sys
+from copy import copy
 from random import randrange
 
 import pygame
+from colour import Color
 
+from libs import ptext
+from src.constant import MAPLE_STORY_BOLD_FONT
 from src.interfaces.i_application import IApplication
 from src.objects.monster import Monster
 from src.objects.player import Player
+from src.objects.util import get_font
 from src.scenes.scene import GameScene
 from src.scenes.start import FONT_PATH
 
@@ -23,6 +28,11 @@ class StageScene(GameScene):
         self.audio = self.application.audio
 
         self.monsters = []
+        self.data = {
+            "score": 0,
+            "gold": 0
+        }
+        self.app.game_objects = []
 
     def play(self):
         self.is_playing = True
@@ -42,10 +52,12 @@ class StageScene(GameScene):
             app=self.app,
             position=(0, self.screen.get_height() - 50),
         )
+        self.player = player
         all_sprites.add(player)
 
         while self.is_playing:
             delta_time = self.app.clock.tick(self.app.fps)
+            self.app.delta_time = delta_time
             player.delta_time = delta_time
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -114,6 +126,7 @@ class StageScene(GameScene):
             # display player
 
             for missile in player.missiles:
+                # missile.image.fill((255, 0, 0))
                 self.screen.blit(missile.image, (missile.x, missile.y))
                 missile.update(self, delta_time)
                 if missile.is_destroy is True:
@@ -142,11 +155,43 @@ class StageScene(GameScene):
                 ),
             )
 
+            score_text = ptext.draw(
+                f"Score:{self.data['score']}",
+                (-99, -99),
+                owidth=1.1,
+                ocolor=(255, 255, 255),
+                color=(0, 0, 0),
+                fontname=MAPLE_STORY_BOLD_FONT,
+                fontsize=18
+            )
+            self.screen.blit(score_text[0], (0, 0))
+
+            gold_text = ptext.draw(
+                f"{self.data['gold']}g",
+                (-99, -99),
+                owidth=1.1,
+                ocolor=(255, 255, 255),
+                color=(0, 0, 0),
+                fontname=MAPLE_STORY_BOLD_FONT,
+                fontsize=18
+            )
+            self.screen.blit(gold_text[0], (self.screen.get_width() - gold_text[0].get_width(), 0))
+
             #
             self.elapsed_frame += 1
 
             all_sprites.update()
-            all_sprites.draw(self.screen)
+            # all_sprites.draw(self.screen)
+            for game_object in self.app.game_objects:
+                game_object.update()
+                if game_object.is_destroyed:
+                    self.app.game_objects.remove(game_object)
+
+            for sprite in all_sprites:
+                rect = copy(sprite.image)
+                rect.fill((100, 0, 0))
+                # self.screen.blit(rect, (sprite.x, sprite.y))
+                self.screen.blit(sprite.image, (sprite.x, sprite.y))
             pygame.display.update()
 
     def spawn_monster(self):
@@ -159,6 +204,7 @@ class StageScene(GameScene):
                     randrange(0, self.screen.get_width() - monster_img.get_width()),
                     0,
                 ),
-                app=self.application
+                app=self.application,
+                check_colliders=[self.player]
             )
         )

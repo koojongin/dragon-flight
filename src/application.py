@@ -87,9 +87,7 @@ class Application(IApplication):
 
         for (dirpath, dirnames, filenames) in os.walk(f"{AUDIO_PATH}"):
             for filename in filenames:
-                self.audio[f"{filename}"] = pygame.mixer.Sound(
-                    f"{dirpath}/{filename}"
-                )
+                self.audio[f"{filename}"] = pygame.mixer.Sound(f"{dirpath}/{filename}")
 
         for (dirpath, dirnames, filenames) in os.walk(f"{AUDIO_PATH}/effect"):
             for filename in filenames:
@@ -157,13 +155,3 @@ class Application(IApplication):
     def set_scene(self, index):
         self.current_scene_index = index
         self.current_scene = self.scenes[index]
-
-    def get_width_by_height(self, height, image):
-        origin_width = image.get_width()
-        origin_height = image.get_height()
-        return (origin_width / origin_height) * height
-
-    def get_height_by_width(self, width, image):
-        origin_width = image.get_width()
-        origin_height = image.get_height()
-        return (origin_height / origin_width) * width

@@ -36,6 +36,5 @@ def get_sunny_name(index):
 
 
 class Sunny:
-
     def __init__(self, name):
         self.name = name

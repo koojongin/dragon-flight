@@ -1,16 +1,13 @@
 import math
-import os
 import sys
 
 import pygame
 
 from libs import ptext
-from src.constant import MAPLE_STORY_BOLD_FONT
+from src.constant import MAPLE_STORY_BOLD_FONT, FONT_PATH
 from src.interfaces.i_application import IApplication
+from src.objects.util import get_width_by_height, get_height_by_width
 from src.scenes.scene import GameScene
-
-PROJECT_PATH = os.path.abspath(os.curdir)
-FONT_PATH = f"{PROJECT_PATH}/resources/font/Maplestory Bold.ttf"
 
 
 class FirstScene(GameScene):
@@ -35,7 +32,7 @@ class FirstScene(GameScene):
             bg,
             (
                 screen.get_width() + 40,
-                app.get_height_by_width(screen.get_width() + 40, bg),
+                get_height_by_width(screen.get_width() + 40, bg),
             ),
         )
 
@@ -92,7 +89,7 @@ class FirstScene(GameScene):
             logo = image["logo"]
 
             scale_height = 170
-            scaled_width = app.get_width_by_height(scale_height, logo)
+            scaled_width = get_width_by_height(scale_height, logo)
             screen.blit(
                 pygame.transform.scale(logo, (scaled_width, scale_height)),
                 (screen.get_width() / 2 - scaled_width / 2, 40),

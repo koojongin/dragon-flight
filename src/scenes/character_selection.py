@@ -7,6 +7,7 @@ from libs import ptext
 from src.constant import MAPLE_STORY_BOLD_FONT
 from src.interfaces.i_application import IApplication
 from src.objects.sunny import get_sunny_name, Sunny
+from src.objects.util import get_height_by_width
 from src.scenes.scene import GameScene
 
 
@@ -70,14 +71,14 @@ class SecondScene(GameScene):
                     if event.key == pygame.K_LEFT:
                         if self.selected_character_index > 0:
                             self.selected_character_index -= 1
-                            self.application.audio['effect/select_02.wav'].play()
+                            self.application.audio["effect/select_02.wav"].play()
 
                         self.update_selected_sunny()
 
                     if event.key == pygame.K_RIGHT:
                         if self.selected_character_index < 14:
                             self.selected_character_index += 1
-                            self.application.audio['effect/select_02.wav'].play()
+                            self.application.audio["effect/select_02.wav"].play()
 
                         self.update_selected_sunny()
 
@@ -111,7 +112,7 @@ class SecondScene(GameScene):
                 self.selected_sunny,
                 (
                     screen.get_width() + 30,
-                    app.get_height_by_width(screen.get_width() + 30, self.selected_sunny),
+                    get_height_by_width(screen.get_width() + 30, self.selected_sunny),
                 ),
             )
             screen.blit(

@@ -6,10 +6,10 @@ from src.objects.bullet import Bullet
 
 class Player(pygame.sprite.Sprite):
     def __init__(
-        self,
-        image,
-        app,
-        position=(0, 0),
+            self,
+            image,
+            app,
+            position=(0, 0),
     ):
         super(Player, self).__init__()
         self.app: IApplication = app
@@ -49,7 +49,7 @@ class Player(pygame.sprite.Sprite):
         sunny: pygame.Surface = app.image[
             f"character/sunny/sunny_{character_number}.png"
         ]
-        sunny = sunny.subsurface((0, 5, 50, 115))
+        sunny = sunny.subsurface((0, 5, 40, 115))
         scale_value = 0.5
         sunny = pygame.transform.scale(
             sunny, (sunny.get_width() * scale_value, sunny.get_height() * scale_value)
@@ -61,7 +61,7 @@ class Player(pygame.sprite.Sprite):
             (self.x, self.y), (self.image.get_width(), self.image.get_height())
         )
 
-    def fire(self, character_number=0):
+    def fire(self):
         character_number = self.app.data["selected_character_index"]
         character_number = str(character_number + 1).zfill(2)
         bullet = Bullet(
@@ -71,7 +71,10 @@ class Player(pygame.sprite.Sprite):
             speed=self.missile_speed,
             damage=int(character_number) + 1,
         )
-        bullet.x = self.x + self.image.get_width() / 2 - bullet.image.get_width() / 2
+        if bullet.image.get_width() > 30:
+            bullet.set_image_width(30)
+
+        bullet.x = self.x + (self.image.get_width() / 2) - bullet.image.get_width() / 2
         bullet.y = self.y + self.image.get_height() / 2 - bullet.image.get_height() / 2
         bullet.departure = (self.x, self.y)
         bullet.destination = (self.x, -100)
@@ -85,6 +88,11 @@ class Player(pygame.sprite.Sprite):
         self.update_sprites()
         self.update_movement()
         self.update_missile_cooldown()
+        self.deadline_auto_suicide()
+
+    def deadline_auto_suicide(self):
+        if self.y <= -100:
+            self.destroy()
 
     def update_missile_cooldown(self):
         if self.missile_cooldown_count <= 0:
