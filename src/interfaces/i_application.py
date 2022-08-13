@@ -1,6 +1,8 @@
 class IApplication:
-    current_scene = None
-    game_objects = []
+    def __init__(self):
+        self.current_scene = None
+        self.game_objects = []
+        self.delta_time = 0
 
     def run(self):
         pass

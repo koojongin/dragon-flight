@@ -3,15 +3,13 @@ from copy import copy
 from random import randrange
 
 import pygame
-from colour import Color
 
 from libs import ptext
 from src.constant import MAPLE_STORY_BOLD_FONT
 from src.interfaces.i_application import IApplication
-from src.objects.monster import Monster
-from src.objects.monsters.candy import MonsterCandy
+from src.objects.monsters.Candy import MonsterCandy
+from src.objects.monsters.StageBossOne import StageBossOneMonster
 from src.objects.player import Player
-from src.objects.util import get_font
 from src.scenes.scene import GameScene
 from src.scenes.start import FONT_PATH
 
@@ -28,14 +26,15 @@ class StageScene(GameScene):
         self.image = self.application.image
         self.audio = self.application.audio
 
-        self.monsters = []
         self.data = {
             "score": 0,
             "gold": 0
         }
+        self.player = None
         self.app.game_objects = []
 
     def play(self):
+        self.app.game_objects = []
         self.is_playing = True
         self.audio["bgm_till_the_end_of_infinity.mp3"].set_volume(0.5)
         self.audio["bgm_till_the_end_of_infinity.mp3"].play(-1)
@@ -54,9 +53,11 @@ class StageScene(GameScene):
             position=(0, self.screen.get_height() - 50),
         )
         self.player = player
+        self.app.game_objects.append(StageBossOneMonster(self.app))
         all_sprites.add(player)
 
         while self.is_playing:
+            print(self.app.game_objects.__len__())
             delta_time = self.app.clock.tick(self.app.fps)
             self.app.delta_time = delta_time
             player.delta_time = delta_time
@@ -96,47 +97,8 @@ class StageScene(GameScene):
                 bg_y = 0
             bg_y += 1
 
-            # display monsters
-            for monster_index, monster in enumerate(self.monsters):
-                if monster.is_destroy is True:
-                    self.monsters.remove(monster)
-                    continue
-                self.screen.blit(monster.image, (monster.position[0], monster.position[1]))
-                if monster.bullet_cooldown_count <= 0:
-                    monster.fire(
-                        (
-                            player.position[0] + player.rect.width / 2,
-                            player.position[1] + player.rect.height / 2,
-                        )
-                    )
-                    monster.bullet_cooldown_count = monster.bullet_cooldown
-                monster.position = (monster.position[0], monster.position[1] + monster.speed * delta_time)
-                if monster.position[1] > self.screen.get_height():
-                    self.monsters.remove(monster)
-                    continue
-
-                monster.bullet_cooldown_count -= delta_time
-
-                for bullet in monster.bullets:
-                    self.screen.blit(bullet.image, (bullet.position[0], bullet.position[1]))
-                    bullet.update(self, delta_time)
-                    bullet.check_collision([player])
-                    if bullet.is_destroy is True:
-                        monster.bullets.remove(bullet)
-
-            # display player
-
-            for missile in player.missiles:
-                # missile.image.fill((255, 0, 0))
-                self.screen.blit(missile.image, (missile.position[0], missile.position[1]))
-                missile.update(self, delta_time)
-                if missile.is_destroy is True:
-                    player.missiles.remove(missile)
-                    continue
-                missile.check_collision(self.monsters)
-
             # player 사망처리
-            if player.is_destroy:
+            if player.is_destroyed:
                 self.is_playing = False
                 self.audio["bgm_till_the_end_of_infinity.mp3"].stop()
                 self.app.select_scene(1)
@@ -182,30 +144,29 @@ class StageScene(GameScene):
             self.elapsed_frame += 1
 
             all_sprites.update()
-            # all_sprites.draw(self.screen)
             for game_object in self.app.game_objects:
                 game_object.update()
                 if game_object.is_destroyed:
-                    self.app.game_objects.remove(game_object)
+                    try:
+                        self.app.game_objects.remove(game_object)
+                    except:  # Exception as exception:
+                        pass
 
             for sprite in all_sprites:
-                rect = copy(sprite.image)
-                rect.fill((100, 0, 0))
-                # self.screen.blit(rect, (sprite.x, sprite.y))
                 self.screen.blit(sprite.image, (sprite.position[0], sprite.position[1]))
             pygame.display.update()
 
     def spawn_monster(self):
         monster_img = self.image["monsters/candy.png"]
-        self.monsters.append(
-            MonsterCandy(
-                image=monster_img,
-                arrow_image=self.image["monsters/candy_arrow.png"],
-                position=(
-                    randrange(0, self.screen.get_width() - monster_img.get_width()),
-                    0,
-                ),
-                app=self.application,
-                check_colliders=[self.player]
-            )
+        monster = MonsterCandy(
+            image=monster_img,
+            arrow_image=self.image["monsters/candy_arrow.png"],
+            position=(
+                randrange(0, self.screen.get_width() - monster_img.get_width()),
+                0,
+            ),
+            app=self.application,
+            check_colliders=[self.player]
         )
+
+        self.app.game_objects.append(monster)

@@ -1,7 +1,7 @@
 import pygame
 
 from src.interfaces.i_application import IApplication
-from src.objects.bullet import Bullet
+from src.objects.bullets.PlayerBullet import PlayerBullet
 
 
 class Player(pygame.sprite.Sprite):
@@ -20,14 +20,13 @@ class Player(pygame.sprite.Sprite):
         ###
         self.max_hp = 3
         self.current_hp = self.max_hp
-        self.missiles = []
         self.missile_speed = 0.5
         self.missile_cooldown = 200
         self.missile_cooldown_count = 0
 
         self.speed = 0.3
         self.destination = (0, 0)
-        self.is_destroy = False
+        self.is_destroyed = False
         self.state = "neutral"  # left,right,neutral
         self.index = 0
         self.alphas = []
@@ -63,12 +62,13 @@ class Player(pygame.sprite.Sprite):
     def fire(self):
         character_number = self.app.data["selected_character_index"]
         character_number = str(character_number + 1).zfill(2)
-        bullet = Bullet(
+        bullet = PlayerBullet(
             self.app.current_scene.image[
                 f"character/weapon/bullet_{character_number}_01.png"
             ],
             speed=self.missile_speed,
             damage=int(character_number) + 1,
+            app=self.app
         )
         if bullet.image.get_width() > 30:
             bullet.set_image_width(30)
@@ -76,9 +76,9 @@ class Player(pygame.sprite.Sprite):
         bullet_x = self.position[0] + (self.image.get_width() / 2) - bullet.image.get_width() / 2
         bullet_y = self.position[1] + self.image.get_height() / 2 - bullet.image.get_height() / 2
         bullet.position = (bullet_x, bullet_y)
-        bullet.departure = (self.position[0], self.position[1])
+        bullet.departure = self.position
         bullet.destination = (self.position[0], -100)
-        self.missiles.append(bullet)
+        self.app.game_objects.append(bullet)
 
     def update(self, *args):
         self.rect = pygame.Rect(
@@ -138,7 +138,7 @@ class Player(pygame.sprite.Sprite):
             self.position = (self.position[0], result)
 
     def destroy(self):
-        self.is_destroy = True
+        self.is_destroyed = True
         print("DIE")
 
     def on_event_keydown(self, key):
@@ -163,14 +163,13 @@ class Player(pygame.sprite.Sprite):
 
     def on_collision(self, target):
         target_class_name = type(target).__name__
-        is_collision = pygame.Rect.colliderect(self.get_rect(), target.get_rect())
-        if target_class_name == "Bullet" and is_collision:
+        if target_class_name == "Bullet":
             self.current_hp -= 1
             self.alphas = [10, 10, 255, 10, 10, 255, 10, 10, 255, 10, 10, 255]
             if self.current_hp <= 0:
                 self.destroy()
 
-        if target_class_name.find("Monster") >= 0 and is_collision:
+        if target_class_name.find("Monster") >= 0:
             self.current_hp = 0
             self.destroy()
 

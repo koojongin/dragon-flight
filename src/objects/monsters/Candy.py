@@ -41,12 +41,12 @@ class MonsterCandy(Monster):
                 (self.position[0] + self.image.get_width() / 2, self.position[1] + self.image.get_height() / 2))
             self.app.game_objects.append(coin)
 
-        self.is_destroy = True
+        self.is_destroyed = True
 
     def on_collision(self, target):
         target_class_name = type(target).__name__
         is_collision = pygame.Rect.colliderect(self.get_rect(), target.get_rect())
-        if target_class_name == "Bullet" and is_collision:
+        if target_class_name.find("Bullet") >= 0 and is_collision:
             if is_collision:
                 self.current_hp -= target.damage
                 if self.current_hp <= 0:
