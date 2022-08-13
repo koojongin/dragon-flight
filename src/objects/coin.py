@@ -2,9 +2,10 @@ import pygame
 from pygame.surface import Surface
 
 from src.interfaces.i_application import IApplication
+from src.objects.GameObject import GameObject
 
 
-class Coin:
+class Coin(GameObject):
     falling_speed = 0.5
     coin_value = 1
 

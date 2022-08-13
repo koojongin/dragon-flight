@@ -1,7 +1,7 @@
 import pygame
 
 from src.interfaces.i_application import IApplication
-from src.objects.bullet import Bullet
+from src.objects.Bullet import Bullet
 from src.objects.util import calculate_distance_dot, get_height_by_width
 
 

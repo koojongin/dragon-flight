@@ -1,6 +1,6 @@
 import pygame
 
-from src.objects.bullet import Bullet
+from src.objects.Bullet import Bullet
 from src.objects.monster import Monster
 
 
@@ -36,6 +36,7 @@ class StageBossOneMonster(Monster):
         bullet = Bullet(self.app.image['monsters/baldhair_arrow.png'], app=self.app, speed=bullet_speed)
         bullet_x = self.position[0] + self.image.get_width() / 2 - bullet.image.get_width() / 2
         bullet_y = self.position[1] + self.image.get_height() / 2 - bullet.image.get_height() / 2
+        bullet.__name__ = 'gg'
         bullet.position = (bullet_x, bullet_y)
         bullet.departure = bullet.position
         bullet.destination = target_position

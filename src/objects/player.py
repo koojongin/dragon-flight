@@ -90,6 +90,21 @@ class Player(pygame.sprite.Sprite):
         self.update_missile_cooldown()
         self.deadline_auto_suicide()
 
+        def is_monster(game_object):
+            class_name = type(game_object).__name__
+            return class_name.find('Monster') >= 0
+
+        monsters = filter(lambda game_object: is_monster(game_object), self.app.game_objects)
+        self.check_collision(monsters)
+
+    def check_collision(self, targets):
+        player_rect = pygame.Rect(self.position, self.image.get_size())
+        for target in targets:
+            target_rect = pygame.Rect(target.position, target.get_size())
+            is_collision = pygame.Rect.colliderect(player_rect, target_rect)
+            if is_collision:
+                self.on_collision(target)
+
     def deadline_auto_suicide(self):
         if self.position[1] <= -100:
             self.destroy()

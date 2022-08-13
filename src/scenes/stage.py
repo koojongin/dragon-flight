@@ -57,7 +57,7 @@ class StageScene(GameScene):
         all_sprites.add(player)
 
         while self.is_playing:
-            print(self.app.game_objects.__len__())
+
             delta_time = self.app.clock.tick(self.app.fps)
             self.app.delta_time = delta_time
             player.delta_time = delta_time
@@ -151,6 +151,15 @@ class StageScene(GameScene):
                         self.app.game_objects.remove(game_object)
                     except:  # Exception as exception:
                         pass
+
+                screen_padding = 500
+                screen_size = self.screen.get_size()
+                screen_rect = pygame.Rect((0, 0),
+                                          (screen_size[0] + screen_padding, screen_size[1] + screen_padding))
+                target_rect = pygame.Rect(game_object.position, game_object.get_size())
+                is_inside_screen = pygame.Rect.colliderect(screen_rect, target_rect)
+                if not is_inside_screen:
+                    game_object.destroy()
 
             for sprite in all_sprites:
                 self.screen.blit(sprite.image, (sprite.position[0], sprite.position[1]))

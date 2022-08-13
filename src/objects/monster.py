@@ -1,14 +1,12 @@
-import datetime
-import math
-
 import pygame
 
 from src.interfaces.i_application import IApplication
-from src.objects.bullet import Bullet
+from src.objects.Bullet import Bullet
+from src.objects.GameObject import GameObject
 from src.objects.coin import Coin
 
 
-class Monster:
+class Monster(GameObject):
     def __init__(self, image, position=(0, 0), arrow_image=None, app=None, check_colliders=[]):
         self.image = image
         self.app: IApplication = app
@@ -26,6 +24,9 @@ class Monster:
         # self.bullets = []
 
         self.is_destroyed = False
+
+    def get_size(self):
+        return super().get_size()
 
     def set_speed(self, speed):
         self.speed = speed
@@ -63,7 +64,6 @@ class Monster:
 
         if target_class_name.find("Bullet") >= 0:
             self.current_hp -= target.damage
-            print(target_class_name, self.current_hp)
 
         if self.current_hp <= 0:
             self.destroy(by_player_attack=True)
